@@ -1,6 +1,5 @@
 package com.nikolay.AutoPartInventory.controller;
 
-import com.nikolay.AutoPartInventory.entity.Model;
 import com.nikolay.AutoPartInventory.entity.Part;
 import com.nikolay.AutoPartInventory.repository.PartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +27,19 @@ public class PartController {
         this.partRepository = partRepository;
     }
 
+    @PostMapping(path = "/get-all-new")
+    public ResponseEntity<List<Part>> getAllNew(
+        @RequestBody List<Part> mobilePartList
+    ) {
+        if (mobilePartList.size() != 0)  {
+            int[] restIds = mobilePartList.stream().map(Part::getRestId).mapToInt(Integer::intValue).toArray();
+            partList = partRepository.findByRestIdNotIn(restIds);
+        } else {
+            partList = partRepository.findAll();
+        }
+        return new ResponseEntity<>(partList, HttpStatus.OK);
+    }
+
     @PostMapping(path = "/get-with-difference")
     public ResponseEntity<List<Part>> getWithDifference(
             @RequestBody List<Part> mobilePartList
@@ -42,6 +54,7 @@ public class PartController {
                 || part.getModel().getRestId() != mobilePart.getModel().getRestId()
                 || part.getCategory().getRestId() != mobilePart.getCategory().getRestId()
             ) {
+                part.setId(mobilePart.getId());
                 differencePartList.add(part);
             }
         }
@@ -88,7 +101,7 @@ public class PartController {
     public ResponseEntity<Boolean> update(
             @RequestBody List<Part> mobilePartList
     ) {
-        if(mobilePartList.size() != partRepository.findAll().size()) {
+        if(mobilePartList.size() == 0) {
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
 

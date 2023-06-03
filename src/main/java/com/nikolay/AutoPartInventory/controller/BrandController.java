@@ -28,6 +28,20 @@ public class BrandController {
         this.brandRepository = brandRepository;
     }
 
+
+    @PostMapping(path = "/get-all-new")
+    public ResponseEntity<List<Brand>> getAllNew(
+            @RequestBody List<Brand> mobileBrandList
+    ) {
+        if (mobileBrandList.size() != 0)  {
+            int[] restIds = mobileBrandList.stream().map(Brand::getRestId).mapToInt(Integer::intValue).toArray();
+            brandList = brandRepository.findByRestIdNotIn(restIds);
+        } else {
+            brandList = brandRepository.findAll();
+        }
+        return new ResponseEntity<>(brandList, HttpStatus.OK);
+    }
+
     @PostMapping(path = "/get-with-difference")
     public ResponseEntity<List<Brand>> getWithDifference(
         @RequestBody List<Brand> mobileBrandList
@@ -36,6 +50,7 @@ public class BrandController {
         for (Brand mobileBrand: mobileBrandList) {
            brand = brandRepository.findById(mobileBrand.getRestId());
            if (!brand.getName().equals(mobileBrand.getName())) {
+               brand.setId(mobileBrand.getId());
                differenceBrandList.add(brand);
            }
         }
@@ -77,7 +92,7 @@ public class BrandController {
     public ResponseEntity<Boolean> update(
             @RequestBody List<Brand> mobileBrandList
     ) {
-        if(mobileBrandList.size() != brandRepository.findAll().size()) {
+        if(mobileBrandList.size() == 0) {
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
 

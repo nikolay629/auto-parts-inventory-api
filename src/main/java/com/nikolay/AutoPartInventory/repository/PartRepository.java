@@ -9,4 +9,5 @@ public interface PartRepository extends JpaRepository<Part, Integer> {
 
     Part findById(int id);
 
+    List<Part> findByRestIdNotIn(int[] restIds);
 }

@@ -11,4 +11,5 @@ public interface ModelRepository extends JpaRepository<Model, Integer> {
 
     List<Model> findByBrand(Brand brand);
 
+    List<Model> findByRestIdNotIn(int[] restIds);
 }

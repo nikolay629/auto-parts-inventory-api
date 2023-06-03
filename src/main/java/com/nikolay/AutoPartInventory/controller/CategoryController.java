@@ -1,6 +1,5 @@
 package com.nikolay.AutoPartInventory.controller;
 
-import com.nikolay.AutoPartInventory.entity.Brand;
 import com.nikolay.AutoPartInventory.entity.Category;
 import com.nikolay.AutoPartInventory.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +28,20 @@ public class CategoryController {
         this.categoryRepository = categoryRepository;
     }
 
+
+    @PostMapping(path = "/get-all-new")
+    public ResponseEntity<List<Category>> getAllNew(
+            @RequestBody List<Category> mobileCategoryList
+    ) {
+        if (mobileCategoryList.size() != 0)  {
+            int[] restIds = mobileCategoryList.stream().map(Category::getRestId).mapToInt(Integer::intValue).toArray();
+            categoryList = categoryRepository.findByRestIdNotIn(restIds);
+        } else {
+            categoryList = categoryRepository.findAll();
+        }
+        return new ResponseEntity<>(categoryList, HttpStatus.OK);
+    }
+
     @PostMapping(path = "/get-with-difference")
     public ResponseEntity<List<Category>> getWithDifference(
             @RequestBody List<Category> mobileCategoryList
@@ -37,6 +50,7 @@ public class CategoryController {
         for (Category mobileCategory: mobileCategoryList) {
             category = categoryRepository.findById(mobileCategory.getRestId());
             if (!category.getName().equals(mobileCategory.getName())) {
+                category.setId(mobileCategory.getId());
                 differenceCategoryList.add(category);
             }
         }
@@ -77,7 +91,7 @@ public class CategoryController {
     public ResponseEntity<Boolean> update(
             @RequestBody List<Category> mobileCategoryList
     ) {
-        if(mobileCategoryList.size() != categoryRepository.findAll().size()) {
+        if(mobileCategoryList.size() == 0) {
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
 
