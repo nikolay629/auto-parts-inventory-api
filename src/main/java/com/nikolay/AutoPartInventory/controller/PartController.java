@@ -108,11 +108,13 @@ public class PartController {
         for (Part mobilePart: mobilePartList) {
             part = partRepository.findById(mobilePart.getRestId());
             if (
-                !part.getName().equals(mobilePart.getName())
-                || part.getQty() != mobilePart.getQty()
-                || part.getPrice() != mobilePart.getPrice()
-                || part.getModel().getRestId() != mobilePart.getModel().getRestId()
-                || part.getCategory().getRestId() != mobilePart.getCategory().getRestId()
+                part != null && (
+                    !part.getName().equals(mobilePart.getName())
+                    || part.getQty() != mobilePart.getQty()
+                    || part.getPrice() != mobilePart.getPrice()
+                    || part.getModel().getRestId() != mobilePart.getModel().getRestId()
+                    || part.getCategory().getRestId() != mobilePart.getCategory().getRestId()
+                )
             ) {
                 partRepository.saveAndFlush(mobilePart);
             }

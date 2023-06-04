@@ -102,8 +102,10 @@ public class ModelController {
         for (Model mobileModel: mobileModelList) {
             model = modelRepository.findById(mobileModel.getRestId());
             if (
-                !model.getName().equals(mobileModel.getName())
-                || model.getBrand().getRestId() != mobileModel.getBrand().getRestId()
+                model != null && (
+                    !model.getName().equals(mobileModel.getName())
+                    || model.getBrand().getRestId() != mobileModel.getBrand().getRestId()
+                )
             ) {
                 modelRepository.saveAndFlush(mobileModel);
             }

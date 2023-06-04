@@ -97,7 +97,7 @@ public class CategoryController {
 
         for (Category mobileCategory: mobileCategoryList) {
             category = categoryRepository.findById(mobileCategory.getRestId());
-            if (!category.getName().equals(mobileCategory.getName())) {
+            if (category != null && !category.getName().equals(mobileCategory.getName())) {
                 categoryRepository.saveAndFlush(mobileCategory);
             }
         }

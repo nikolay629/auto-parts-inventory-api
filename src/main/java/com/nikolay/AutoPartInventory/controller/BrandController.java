@@ -98,7 +98,8 @@ public class BrandController {
 
         for (Brand mobileBrand: mobileBrandList) {
             brand = brandRepository.findById(mobileBrand.getRestId());
-            if (!brand.getName().equals(mobileBrand.getName())) {
+            if (brand != null && !brand.getName().equals(mobileBrand.getName())
+            ) {
                 brandRepository.saveAndFlush(mobileBrand);
             }
         }
